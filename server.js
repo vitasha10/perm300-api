@@ -43,7 +43,7 @@ fastify.get('/initQuestRooms', async (request, reply) => {
         pool.query(`
             CREATE TABLE IF NOT EXISTS quest_rooms (
                 id BIGSERIAL PRIMARY KEY,
-                user_id TEXT,
+                user_id TEXT UNIQUE,
                 data TEXT
         );`, (e, results) => {
             if (e) {
@@ -69,7 +69,11 @@ fastify.get('/getQuestRooms', async (request, reply) => {
                 resolve({status: "error", e, results})
                 return;
             }
-            resolve({status: "success", rows: JSON.parse(results.rows[0].data)})
+            if(results.rowCount === 0) {
+                resolve({status: "success", rows: []})
+                return;
+            }
+            resolve({status: "success", rows: JSON.parse(results.rows[0]?.data)})
         })
     })
 })
@@ -98,7 +102,7 @@ fastify.get('/initGuessedLocations', async (request, reply) => {
         pool.query(`
             CREATE TABLE IF NOT EXISTS guessed_locations (
                 id BIGSERIAL PRIMARY KEY,
-                user_id TEXT,
+                user_id TEXT UNIQUE,
                 data TEXT
         );`, (e, results) => {
             if (e) {
@@ -124,7 +128,11 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
                 resolve({status: "error", e, results})
                 return;
             }
-            resolve({status: "success", rows: JSON.parse(results.rows[0].data)})
+            if(results.rowCount === 0) {
+                resolve({status: "success", rows: []})
+                return;
+            }
+            resolve({status: "success", rows: JSON.parse(results.rows[0]?.data)})
         })
     })
 })
