@@ -43,7 +43,7 @@ fastify.get('/initQuestRooms', async (request, reply) => {
         pool.query(`
             CREATE TABLE IF NOT EXISTS quest_rooms (
                 id BIGSERIAL PRIMARY KEY,
-                user_id TEXT UNIQUE,
+                userid TEXT,
                 data TEXT
         );`, (e, results) => {
             if (e) {
@@ -61,8 +61,8 @@ fastify.get('/getQuestRooms', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
             SELECT data FROM quest_rooms
-            WHERE user_id=$1;
-        `, [request.query.userId], (e, results) => {
+            WHERE userid=$1;
+        `, [String(request.query.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -82,8 +82,8 @@ fastify.post('/setQuestRooms', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
             SELECT data FROM quest_rooms
-            WHERE user_id=$1;
-        `, [request.query.userId], (e, results) => {
+            WHERE userid=$1;
+        `, [String(request.query.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -92,7 +92,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
             if(results.rowCount === 0) {
                 console.log('2222222222222222222')
                 pool.query(`
-                    INSERT INTO quest_rooms (user_id, data) 
+                    INSERT INTO quest_rooms (userid, data) 
                     VALUES ($1, $2);
                 `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
                     if (e) {
@@ -107,7 +107,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
                 console.log('333333333333333333333333333333')
                 pool.query(`
                     UPDATE quest_rooms
-                      SET data = $2 WHERE user_id = $1;
+                      SET data = $2 WHERE userid = $1;
                 `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
                     if (e) {
                         console.log(e)
@@ -127,7 +127,7 @@ fastify.get('/initGuessedLocations', async (request, reply) => {
         pool.query(`
             CREATE TABLE IF NOT EXISTS guessed_locations (
                 id BIGSERIAL PRIMARY KEY,
-                user_id TEXT UNIQUE,
+                userid TEXT,
                 data TEXT
         );`, (e, results) => {
             if (e) {
@@ -145,8 +145,8 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
             SELECT data FROM guessed_locations
-            WHERE user_id=$1;
-        `, [request.query.userId], (e, results) => {
+            WHERE userid=$1;
+        `, [String(request.query.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -166,8 +166,8 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
             SELECT data FROM guessed_locations
-            WHERE user_id=$1;
-        `, [request.query.userId], (e, results) => {
+            WHERE userid=$1;
+        `, [String(request.query.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -176,7 +176,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
             if(results.rowCount === 0) {
                 console.log('2222222222222222222')
                 pool.query(`
-                    INSERT INTO guessed_locations (user_id, data) 
+                    INSERT INTO guessed_locations (userid, data) 
                     VALUES ($1, $2);
                 `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
                     if (e) {
@@ -191,7 +191,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
                 console.log('333333333333333333333333333333')
                 pool.query(`
                     UPDATE guessed_locations
-                      SET data = $2 WHERE user_id = $1;
+                      SET data = $2 WHERE userid = $1;
                 `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
                     if (e) {
                         console.log(e)
