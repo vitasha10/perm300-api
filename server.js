@@ -83,8 +83,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
         pool.query(`
             SELECT data FROM quest_rooms
             WHERE userid=$1;
-        `, [String(request.query.userId)], (e, results) => {
-            console.log(results, String(request.body.userId), JSON.stringify(request.body.data))
+        `, [String(request.body.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -101,7 +100,6 @@ fastify.post('/setQuestRooms', async (request, reply) => {
                         resolve({status: "error", e: e})
                         return;
                     }
-                    console.log(results2)
                     resolve({status: "success"})
                 })
                 return;
@@ -169,7 +167,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
         pool.query(`
             SELECT data FROM guessed_locations
             WHERE userid=$1;
-        `, [String(request.query.userId)], (e, results) => {
+        `, [String(request.body.userId)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
