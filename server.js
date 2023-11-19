@@ -84,7 +84,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
         pool.query(`
             INSERT INTO quest_rooms (user_id, data) 
             VALUES ($1, $2)
-            ON CONFLICT (id) DO UPDATE 
+            ON CONFLICT (user_id) DO UPDATE 
               SET data = $2 WHERE user_id = $1;
         `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
             if (e) {
@@ -143,7 +143,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
         pool.query(`
             INSERT INTO guessed_locations (user_id, data) 
             VALUES ($1, $2)
-            ON CONFLICT (id) DO UPDATE 
+            ON CONFLICT (user_id) DO UPDATE 
               SET data = $2 WHERE user_id = $1;
         `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
             if (e) {
