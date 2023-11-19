@@ -77,15 +77,25 @@ fastify.get('/getQuestRooms', async (request, reply) => {
 fastify.post('/addQuestRooms', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            INSERT INTO quest_rooms
-            (userid, data) VALUES ($1,$2);
-        `, [request.body.userId, request.body.data], (e, results) => {
-            if (e) {
-                console.log(e)
-                resolve({status: "error", e: e})
-                return;
+            SELECT data FROM quest_rooms
+            WHERE userid=$1 AND data=$2;
+        `, [request.body.userId, request.body.data], (e2, results2) => {
+            if(results2.rowCount === 0){
+                pool.query(`
+                    INSERT INTO quest_rooms
+                    (userid, data) VALUES ($1,$2);
+                `, [request.body.userId, request.body.data], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return
+            }else{
+                resolve({status: "success"})
             }
-            resolve({status: "success"})
         })
     })
 })
@@ -149,15 +159,25 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
 fastify.post('/addGuessedLocations', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            INSERT INTO guessed_locations
-            (userid, data) VALUES ($1,$2);
-        `, [request.body.userId, request.body.data], (e, results) => {
-            if (e) {
-                console.log(e)
-                resolve({status: "error", e: e})
-                return;
+            SELECT data FROM guessed_locations
+            WHERE userid=$1 AND data=$2;
+        `, [request.body.userId, request.body.data], (e2, results2) => {
+            if(results2.rowCount === 0){
+                pool.query(`
+                    INSERT INTO guessed_locations
+                    (userid, data) VALUES ($1,$2);
+                `, [request.body.userId, request.body.data], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return
+            }else{
+                resolve({status: "success"})
             }
-            resolve({status: "success"})
         })
     })
 })
