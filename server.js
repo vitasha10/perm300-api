@@ -82,17 +82,41 @@ fastify.get('/getQuestRooms', async (request, reply) => {
 fastify.post('/setQuestRooms', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            INSERT INTO quest_rooms (user_id, data) 
-            VALUES ($1, $2)
-            ON CONFLICT (user_id) DO UPDATE 
-              SET data = $2 WHERE user_id = $1;
-        `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+            SELECT data FROM quest_rooms
+            WHERE user_id=$1;
+        `, [request.query.userId], (e, results) => {
             if (e) {
                 console.log(e)
-                resolve({status: "error", e: e})
+                resolve({status: "error", e, results})
                 return;
             }
-            resolve({status: "success"})
+            if(results.rowCount === 0) {
+                pool.query(`
+                    INSERT INTO quest_rooms (user_id, data) 
+                    VALUES ($1, $2);
+                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return;
+            }else{
+                pool.query(`
+                    UPDATE quest_rooms
+                      SET data = $2 WHERE user_id = $1;
+                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return;
+            }
         })
     })
 })
@@ -141,17 +165,41 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
 fastify.post('/setGuessedLocations', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            INSERT INTO guessed_locations (user_id, data) 
-            VALUES ($1, $2)
-            ON CONFLICT (user_id) DO UPDATE 
-              SET data = $2 WHERE user_id = $1;
-        `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+            SELECT data FROM guessed_locations
+            WHERE user_id=$1;
+        `, [request.query.userId], (e, results) => {
             if (e) {
                 console.log(e)
-                resolve({status: "error", e: e})
+                resolve({status: "error", e, results})
                 return;
             }
-            resolve({status: "success"})
+            if(results.rowCount === 0) {
+                pool.query(`
+                    INSERT INTO guessed_locations (user_id, data) 
+                    VALUES ($1, $2);
+                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return;
+            }else{
+                pool.query(`
+                    UPDATE guessed_locations
+                      SET data = $2 WHERE user_id = $1;
+                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+                    if (e) {
+                        console.log(e)
+                        resolve({status: "error", e: e})
+                        return;
+                    }
+                    resolve({status: "success"})
+                })
+                return;
+            }
         })
     })
 })
