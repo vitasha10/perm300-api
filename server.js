@@ -58,7 +58,7 @@ fastify.get('/getQuestRooms', async (request, reply) => {
         pool.query(`
             SELECT data FROM quest_rooms
             WHERE userid=$1;
-        `, [String(request.query.userId)], (e, results) => {
+        `, [String(request.query.userid)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -79,12 +79,12 @@ fastify.post('/addQuestRooms', async (request, reply) => {
         pool.query(`
             SELECT data FROM quest_rooms
             WHERE userid=$1 AND data=$2;
-        `, [request.body.userId, request.body.data], (e2, results2) => {
+        `, [request.body.userid, request.body.data], (e2, results2) => {
             if(results2.rowCount === 0){
                 pool.query(`
                     INSERT INTO quest_rooms
                     (userid, data) VALUES ($1,$2);
-                `, [request.body.userId, request.body.data], (e, results) => {
+                `, [request.body.userid, request.body.data], (e, results) => {
                     if (e) {
                         console.log(e)
                         resolve({status: "error", e: e})
@@ -105,7 +105,7 @@ fastify.post('/removeQuestRooms', async (request, reply) => {
         pool.query(`
             DELETE FROM quest_rooms 
             WHERE userid=$1 AND data=$2;
-        `, [request.body.userId, request.body.data], (e, results) => {
+        `, [request.body.userid, request.body.data], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e: e})
@@ -140,7 +140,7 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
         pool.query(`
             SELECT data FROM guessed_locations
             WHERE userid=$1;
-        `, [request.query.userId], (e, results) => {
+        `, [request.query.userid], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -161,12 +161,12 @@ fastify.post('/addGuessedLocations', async (request, reply) => {
         pool.query(`
             SELECT data FROM guessed_locations
             WHERE userid=$1 AND data=$2;
-        `, [request.body.userId, request.body.data], (e2, results2) => {
+        `, [request.body.userid, request.body.data], (e2, results2) => {
             if(results2.rowCount === 0){
                 pool.query(`
                     INSERT INTO guessed_locations
                     (userid, data) VALUES ($1,$2);
-                `, [request.body.userId, request.body.data], (e, results) => {
+                `, [request.body.userid, request.body.data], (e, results) => {
                     if (e) {
                         console.log(e)
                         resolve({status: "error", e: e})
@@ -187,7 +187,7 @@ fastify.post('/removeGuessedLocations', async (request, reply) => {
         pool.query(`
             DELETE FROM guessed_locations 
             WHERE userid=$1 AND data=$2;
-        `, [request.body.userId, request.body.data], (e, results) => {
+        `, [request.body.userid, request.body.data], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e: e})
