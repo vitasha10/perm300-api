@@ -84,6 +84,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
             SELECT data FROM quest_rooms
             WHERE userid=$1;
         `, [String(request.query.userId)], (e, results) => {
+            console.log(results, String(request.body.userId), JSON.stringify(request.body.data))
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -94,12 +95,13 @@ fastify.post('/setQuestRooms', async (request, reply) => {
                 pool.query(`
                     INSERT INTO quest_rooms (userid, data) 
                     VALUES ($1, $2);
-                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
+                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results2) => {
                     if (e) {
                         console.log(e)
                         resolve({status: "error", e: e})
                         return;
                     }
+                    console.log(results2)
                     resolve({status: "success"})
                 })
                 return;
