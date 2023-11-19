@@ -11,9 +11,6 @@ export const pool = new pkg.Pool({
     port: 5432,
 })
 
-
-
-
 const fastify = Fastify({
     logger: true,
     exposeHeadRoutes: true
@@ -32,7 +29,6 @@ await fastify.register(multipart, {
         parts: 1000000000         // For multipart forms, the max number of parts (fields + files)
     }
 })
-
 
 fastify.get('/', async function handler (request, reply) {
     return { hello: 'world' }
@@ -72,52 +68,40 @@ fastify.get('/getQuestRooms', async (request, reply) => {
                 resolve({status: "success", rows: []})
                 return;
             }
-            resolve({status: "success", rows: JSON.parse(results.rows[0]?.data)})
+            resolve({status: "success", rows: results.rows})
         })
     })
 })
 
-//редактировать отзыв
-fastify.post('/setQuestRooms', async (request, reply) => {
+//добавить ссылку слайдера
+fastify.post('/addQuestRooms', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            SELECT data FROM quest_rooms
-            WHERE userid=$1;
-        `, [String(request.body.userId)], (e, results) => {
+            INSERT INTO quest_rooms
+            (userid, data) VALUES ($1,$2);
+        `, [request.body.userId, request.body.data], (e, results) => {
             if (e) {
                 console.log(e)
-                resolve({status: "error", e, results})
+                resolve({status: "error", e: e})
                 return;
             }
-            if(results.rowCount === 0) {
-                console.log('2222222222222222222')
-                pool.query(`
-                    INSERT INTO quest_rooms (userid, data) 
-                    VALUES ($1, $2);
-                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results2) => {
-                    if (e) {
-                        console.log(e)
-                        resolve({status: "error", e: e})
-                        return;
-                    }
-                    resolve({status: "success"})
-                })
-                return;
-            }else{
-                console.log('333333333333333333333333333333')
-                pool.query(`
-                    UPDATE quest_rooms
-                      SET data = $2 WHERE userid = $1;
-                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
-                    if (e) {
-                        console.log(e)
-                        resolve({status: "error", e: e})
-                        return;
-                    }
-                    resolve({status: "success"})
-                })
+            resolve({status: "success"})
+        })
+    })
+})
+//удалить ссылку слайдера
+fastify.post('/removeQuestRooms', async (request, reply) => {
+    return await new Promise(resolve => {
+        pool.query(`
+            DELETE FROM quest_rooms 
+            WHERE userid=$1 AND data=$2;
+        `, [request.body.userId, request.body.data], (e, results) => {
+            if (e) {
+                console.log(e)
+                resolve({status: "error", e: e})
                 return;
             }
+            resolve({status: "success"})
         })
     })
 })
@@ -146,7 +130,7 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
         pool.query(`
             SELECT data FROM guessed_locations
             WHERE userid=$1;
-        `, [String(request.query.userId)], (e, results) => {
+        `, [request.query.userId], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -156,56 +140,43 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
                 resolve({status: "success", rows: []})
                 return;
             }
-            resolve({status: "success", rows: JSON.parse(results.rows[0]?.data)})
+            resolve({status: "success", rows: results.rows})
         })
     })
 })
 
-//редактировать отзыв
-fastify.post('/setGuessedLocations', async (request, reply) => {
+//добавить ссылку слайдера
+fastify.post('/addGuessedLocations', async (request, reply) => {
     return await new Promise(resolve => {
         pool.query(`
-            SELECT data FROM guessed_locations
-            WHERE userid=$1;
-        `, [String(request.body.userId)], (e, results) => {
+            INSERT INTO guessed_locations
+            (userid, data) VALUES ($1,$2);
+        `, [request.body.userId, request.body.data], (e, results) => {
             if (e) {
                 console.log(e)
-                resolve({status: "error", e, results})
+                resolve({status: "error", e: e})
                 return;
             }
-            if(results.rowCount === 0) {
-                console.log('2222222222222222222')
-                pool.query(`
-                    INSERT INTO guessed_locations (userid, data) 
-                    VALUES ($1, $2);
-                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
-                    if (e) {
-                        console.log(e)
-                        resolve({status: "error", e: e})
-                        return;
-                    }
-                    resolve({status: "success"})
-                })
-                return;
-            }else{
-                console.log('333333333333333333333333333333')
-                pool.query(`
-                    UPDATE guessed_locations
-                      SET data = $2 WHERE userid = $1;
-                `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
-                    if (e) {
-                        console.log(e)
-                        resolve({status: "error", e: e})
-                        return;
-                    }
-                    resolve({status: "success"})
-                })
-                return;
-            }
+            resolve({status: "success"})
         })
     })
 })
-
+//удалить ссылку слайдера
+fastify.post('/removeGuessedLocations', async (request, reply) => {
+    return await new Promise(resolve => {
+        pool.query(`
+            DELETE FROM guessed_locations 
+            WHERE userid=$1 AND data=$2;
+        `, [request.body.userId, request.body.data], (e, results) => {
+            if (e) {
+                console.log(e)
+                resolve({status: "error", e: e})
+                return;
+            }
+            resolve({status: "success"})
+        })
+    })
+})
 
 import { Server } from "socket.io"
 
