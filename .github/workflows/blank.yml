@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  #pull_request:
+  #  branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run a multi-line script
+        run: |
+          mkdir ../build
+          cp -TR . ../build
+          tar -cvf deploy.tar ../build/
+
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASS }}
+          port: 22
+          source: "deploy.tar"
+          target: "/root/"
+
+      - name: Run Docker CMD
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASS }}
+          port: 22
+          script: |
+            rm -rf /root/perm300-api
+            mkdir /root/perm300-api
+            cd /root/perm300-api
+            tar -xvf ../deploy.tar
+            cd /root/perm300-api/build
+            
+            docker build . --tag perm300api:latest
+            docker stop perm300api || true  && docker rm perm300api || true
+            docker run -p 3050:4000 -d --name=perm300api  --network network-perm300 --restart unless-stopped perm300api:latest
