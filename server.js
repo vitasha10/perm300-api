@@ -86,7 +86,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
             VALUES ($1, $2)
             ON CONFLICT (id) DO UPDATE 
               SET data = $2 WHERE user_id = $1;
-        `, [request.body.userId, request.body.data], (e, results) => {
+        `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e: e})
@@ -145,7 +145,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
             VALUES ($1, $2)
             ON CONFLICT (id) DO UPDATE 
               SET data = $2 WHERE user_id = $1;
-        `, [request.body.userId, request.body.data], (e, results) => {
+        `, [String(request.body.userId), JSON.stringify(request.body.data)], (e, results) => {
             if (e) {
                 console.log(e)
                 resolve({status: "error", e: e})
