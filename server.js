@@ -68,7 +68,7 @@ fastify.get('/getQuestRooms', async (request, reply) => {
                 resolve({status: "success", rows: []})
                 return;
             }
-            resolve({status: "success", rows: results.rows})
+            resolve({status: "success", rows: results.rows.map(item => item.data)})
         })
     })
 })
@@ -140,7 +140,7 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
                 resolve({status: "success", rows: []})
                 return;
             }
-            resolve({status: "success", rows: results.rows})
+            resolve({status: "success", rows: results.rows.map(item => item.data)})
         })
     })
 })
