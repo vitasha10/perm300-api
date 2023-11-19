@@ -63,7 +63,6 @@ fastify.get('/getQuestRooms', async (request, reply) => {
             SELECT data FROM quest_rooms
             WHERE user_id=$1;
         `, [request.query.userId], (e, results) => {
-            console.log(results)
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -91,6 +90,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
                 return;
             }
             if(results.rowCount === 0) {
+                console.log('2222222222222222222')
                 pool.query(`
                     INSERT INTO quest_rooms (user_id, data) 
                     VALUES ($1, $2);
@@ -104,6 +104,7 @@ fastify.post('/setQuestRooms', async (request, reply) => {
                 })
                 return;
             }else{
+                console.log('333333333333333333333333333333')
                 pool.query(`
                     UPDATE quest_rooms
                       SET data = $2 WHERE user_id = $1;
@@ -146,7 +147,6 @@ fastify.get('/getGuessedLocations', async (request, reply) => {
             SELECT data FROM guessed_locations
             WHERE user_id=$1;
         `, [request.query.userId], (e, results) => {
-            console.log(results)
             if (e) {
                 console.log(e)
                 resolve({status: "error", e, results})
@@ -174,6 +174,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
                 return;
             }
             if(results.rowCount === 0) {
+                console.log('2222222222222222222')
                 pool.query(`
                     INSERT INTO guessed_locations (user_id, data) 
                     VALUES ($1, $2);
@@ -187,6 +188,7 @@ fastify.post('/setGuessedLocations', async (request, reply) => {
                 })
                 return;
             }else{
+                console.log('333333333333333333333333333333')
                 pool.query(`
                     UPDATE guessed_locations
                       SET data = $2 WHERE user_id = $1;
