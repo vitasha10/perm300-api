@@ -1,7 +1,4 @@
-# я обязательно все тут напишу, буквально сегодня вечером, посмотрите пожалуйста позже если возможно, тут будет очень интересно
-
-## Основной репозиторий - репозиторий фронта - [https://github.com/vitasha10/perm300-frontend](https://github.com/vitasha10/perm300-frontend)
-
+# Всё написано в основном репозитории - репозитории фронта - [https://github.com/vitasha10/perm300-frontend](https://github.com/vitasha10/perm300-frontend)
 
 ## Getting Started
 
