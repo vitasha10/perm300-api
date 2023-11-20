@@ -1,6 +1,11 @@
+# я обязательно все тут напишу, буквально сегодня вечером, посмотрите пожалуйста позже если возможно, тут будет очень интересно
+
+## Основной репозиторий - репозиторий фронта - [https://github.com/vitasha10/perm300-frontend](https://github.com/vitasha10/perm300-frontend)
+
+
 ## Getting Started
 
-* VPS 2 cpu, 2 ram, nvme (for all, not only for that repository)
+* VPS 2 cpu, 4 ram, nvme (for all, not only for that repository)
 * Ubuntu 22.04
 * Install Docker. [Instruction](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04)
 * SSH VPS: ```docker network create -d bridge network-perm300```
@@ -30,7 +35,7 @@ docker run -p 3050:4000 -d --name=perm300api  --network network-perm300 --restar
 * Go to ```http://{new-host-ip}:3050/```
 * If working go to ssh vps
 * **If error with Database go below to Questions paragraph**
-* Move ssl certificates form previous VPS to ```/root/riverbook.cert``` and ```/root/riverbook.key```
+* Move ssl certificates form previous VPS to ```/root/perm300.crt``` and ```/root/perm300.key```
 * [Install Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04)
 * Create config:
 ```
