@@ -18,11 +18,19 @@ const fastify = Fastify({
     exposeHeadRoutes: true
 })
 
-await fastify.register(fastifySocketIO)
-
 await fastify.register(cors, {
-    origin: "*"
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 })
+
+await fastify.register(fastifySocketIO, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    },
+})
+
+
 await fastify.register(multipart, {
     limits: {
         fieldNameSize: 1000, // Max field name size in bytes
@@ -213,11 +221,11 @@ const io = new Server( {
 */
 let blocks = []
 
-
+let io = fastify.io
 
 fastify.ready().then(() => {
     // we need to wait for the server to be ready, else `server.io` is undefined
-    fastify.io.on("connection", (socket) => {
+    io.on("connection", (socket) => {
         console.log("connected")
         socket.emit("hello", "world")
 
