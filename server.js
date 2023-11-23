@@ -222,15 +222,22 @@ const io = new Server( {
 let blocks = [
     [0,0,0,"/dirt.jpg"]
 ]
+let people = [
+
+]
 
 let io = fastify.io
 
 fastify.ready().then(() => {
     // we need to wait for the server to be ready, else `server.io` is undefined
-    io.on("connection", (socket) => {
+    io.on("connection", socket => {
         console.log("connected")
         socket.emit("hello", "world")
-
+        people = [...people, {
+            id: socket.id,
+            position: [0,0,0],
+            rotation: [0,0,0]
+        }]
         socket.on("changeBlocks", arg => {
             console.log(arg)
             try{
@@ -247,7 +254,7 @@ fastify.ready().then(() => {
             io.sockets.emit("setBlocksServer", blocks)
         })
         socket.on("getBlocks", () => {
-            io.sockets.emit("setBlocksServer", blocks)
+            socket.emit("setBlocksServer", blocks)
         })
         socket.on("removeBlocks", arg => {
             console.log("removeBlocks",arg)
@@ -257,11 +264,25 @@ fastify.ready().then(() => {
             io.sockets.emit("setBlocksServer", blocks)
         })
 
-        socket.on("moveMainPerson", arg => {
-            console.log("m",arg)
-            console.log(arg)
-            io.sockets.emit("moveMainPersonServer", arg)
+        socket.on("getPeople", () => {
+            socket.emit("setPeopleServer", people)
         })
+
+        socket.on("moveMainPerson", arg => {
+            console.log("moveMainPerson",arg)
+            people = people.map(item => {
+                if(item.id !== socket.id) return item
+                return {
+                    id: socket.id,
+                    position: arg.position,
+                    rotation: arg.rotation
+                }
+            })
+            //io.sockets.emit("moveMainPersonServer", arg)
+        })
+    })
+    io.on("disconnect", socket => {
+        people = people.filter(item => item.id !== socket.id)
     })
 })
 
