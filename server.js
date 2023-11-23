@@ -1,4 +1,6 @@
 import Fastify from "fastify"
+import fastifySocketIO from "fastify-socket.io"
+
 import cors from "@fastify/cors"
 import multipart from "@fastify/multipart"
 
@@ -15,6 +17,9 @@ const fastify = Fastify({
     logger: true,
     exposeHeadRoutes: true
 })
+
+await fastify.register(fastifySocketIO)
+
 await fastify.register(cors, {
     origin: "*"
 })
@@ -198,55 +203,60 @@ fastify.post('/removeGuessedLocations', async (request, reply) => {
     })
 })
 
-import { Server } from "socket.io"
+/*import { Server } from "socket.io"
 
-const io = new Server(4001, {
+const io = new Server( {
     cors: {
         origin: "*"
     }
 })
-
+*/
 let blocks = []
 
 
-io.on("connection", (socket) => {
-    console.log("connected")
-    socket.emit("hello", "world")
 
-    socket.on("changeBlocks", arg => {
-        console.log(arg)
-        try{
-            if(arg?.type === "remove"){
-                blocks = blocks.filter(item => !(item[0] === arg?.x && item[1] === arg?.y && item[2] === arg?.z))
-            }else{
-                blocks = [...blocks, [
-                    arg?.x, arg?.y, arg?.z, arg?.m,
-                ]]
+fastify.ready().then(() => {
+    // we need to wait for the server to be ready, else `server.io` is undefined
+    fastify.io.on("connection", (socket) => {
+        console.log("connected")
+        socket.emit("hello", "world")
+
+        socket.on("changeBlocks", arg => {
+            console.log(arg)
+            try{
+                if(arg?.type === "remove"){
+                    blocks = blocks.filter(item => !(item[0] === arg?.x && item[1] === arg?.y && item[2] === arg?.z))
+                }else{
+                    blocks = [...blocks, [
+                        arg?.x, arg?.y, arg?.z, arg?.m,
+                    ]]
+                }
+            } catch (e) {
+                console.log("changeBlocks",e)
             }
-        } catch (e) {
-            console.log("changeBlocks",e)
-        }
-        io.sockets.emit("setBlocksServer", blocks)
-    })
-    socket.on("getBlocks", () => {
-        io.sockets.emit("setBlocksServer", blocks)
-    })
-    socket.on("removeBlocks", arg => {
-        console.log("removeBlocks",arg)
-        blocks = []
-        io.sockets.emit("setBlocksServer", blocks)
-    })
+            io.sockets.emit("setBlocksServer", blocks)
+        })
+        socket.on("getBlocks", () => {
+            io.sockets.emit("setBlocksServer", blocks)
+        })
+        socket.on("removeBlocks", arg => {
+            console.log("removeBlocks",arg)
+            blocks = []
+            io.sockets.emit("setBlocksServer", blocks)
+        })
 
-    socket.on("moveMainPerson", arg => {
-        console.log("m",arg)
-        console.log(arg)
-        io.sockets.emit("moveMainPersonServer", arg)
+        socket.on("moveMainPerson", arg => {
+            console.log("m",arg)
+            console.log(arg)
+            io.sockets.emit("moveMainPersonServer", arg)
+        })
     })
 })
 
 const start = async () => {
     try {
         await fastify.listen({ port: 4000, host: '0.0.0.0' })
+        //await io.listen(4001);
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
