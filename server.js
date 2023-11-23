@@ -219,7 +219,9 @@ const io = new Server( {
     }
 })
 */
-let blocks = []
+let blocks = [
+    [0,0,0,"/dirt.jpg"]
+]
 
 let io = fastify.io
 
@@ -249,7 +251,9 @@ fastify.ready().then(() => {
         })
         socket.on("removeBlocks", arg => {
             console.log("removeBlocks",arg)
-            blocks = []
+            blocks = [
+                [0,0,0,"/dirt.jpg"]
+            ]
             io.sockets.emit("setBlocksServer", blocks)
         })
 
