@@ -206,13 +206,37 @@ const io = new Server(4001, {
     }
 })
 
+let blocks = []
+
+
 io.on("connection", (socket) => {
     console.log("connected")
     socket.emit("hello", "world")
+
     socket.on("changeBlocks", arg => {
         console.log(arg)
-        socket.emit("changeBlocksServer", arg)
+        try{
+            if(arg?.type === "remove"){
+                blocks = blocks.filter(item => !(item[0] === arg?.x && item[1] === arg?.y && item[2] === arg?.z))
+            }else{
+                blocks = [...blocks, [
+                    arg?.x, arg?.y, arg?.z, arg?.m,
+                ]]
+            }
+        } catch (e) {
+            console.log("changeBlocks",e)
+        }
+        io.sockets.emit("setBlocksServer", blocks)
     })
+    socket.on("getBlocks", () => {
+        io.sockets.emit("setBlocksServer", blocks)
+    })
+    socket.on("removeBlocks", arg => {
+        console.log("removeBlocks",arg)
+        blocks = []
+        io.sockets.emit("setBlocksServer", blocks)
+    })
+
     socket.on("moveMainPerson", arg => {
         console.log("m",arg)
         console.log(arg)
